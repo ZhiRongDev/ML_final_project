@@ -11,12 +11,27 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score
 
 from sklearn.preprocessing import LabelEncoder
 
-data_train = pd.read_csv('train_dec04_task2.csv')
-data_test = pd.read_csv('test_dec04_task2_only_features.csv')
+###
+# import numpy as np
+from sklearn.impute import SimpleImputer
+###
+
+data_train = pd.read_csv('./train_dec10_task4_missing_supplement.csv')
+data_test = pd.read_csv('./archive/test_dec08_task4_missing_only_features.csv')
 
 le=LabelEncoder()
 le.fit(data_train['class'])
 data_train['class']=le.transform(data_train['class'])
+
+
+###
+my_imputer = SimpleImputer()
+imputed_X_train = pd.DataFrame(my_imputer.fit_transform(data_train))
+imputed_X_train.columns = data_train.columns
+data_train = imputed_X_train
+###
+# breakpoint()
+
 
 def summarize_classification(y_test, y_pred):
     acc = accuracy_score(y_test, y_pred, normalize=True)

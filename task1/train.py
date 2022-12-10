@@ -1,5 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import time
 
 from sklearn.model_selection import train_test_split
@@ -10,7 +9,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn import svm
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
 
 data_train = pd.read_csv('train_nov28_task1.csv')

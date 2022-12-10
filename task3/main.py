@@ -1,6 +1,5 @@
 import pandas as pd
 import time
-
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
@@ -11,8 +10,13 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score
 
 from sklearn.preprocessing import LabelEncoder
 
-data_train = pd.read_csv('train_dec04_task2.csv')
-data_test = pd.read_csv('test_dec04_task2_only_features.csv')
+####
+from sklearn.svm import LinearSVC
+from sklearn.feature_selection import SelectFromModel
+####
+
+data_train = pd.read_csv('./train_dec08_task3.csv')
+data_test = pd.read_csv('./test_dec08_task3_only_features.csv')
 
 le=LabelEncoder()
 le.fit(data_train['class'])
@@ -66,6 +70,17 @@ def Predict_model(mode, x_train, y_train):
 
 X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
+
+
+# print(X.shape)
+####
+lsvc = LinearSVC(C=0.01, penalty="l1", dual=False).fit(X, Y)
+model = SelectFromModel(lsvc, prefit=True)
+X_new = model.transform(X)
+
+# print(X.shape)
+# breakpoint()
+####
 
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
 
