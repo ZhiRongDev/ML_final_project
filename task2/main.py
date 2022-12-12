@@ -10,6 +10,14 @@ from sklearn import svm
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 
 from sklearn.preprocessing import LabelEncoder
+from sklearn.neural_network import MLPClassifier
+from sklearn.feature_selection import SelectFromModel
+from sklearn.impute import SimpleImputer
+####
+from collections import Counter
+from imblearn.combine import SMOTEENN
+from imblearn.combine import SMOTETomek
+####
 
 data_train = pd.read_csv('train_dec04_task2.csv')
 data_test = pd.read_csv('test_dec04_task2_only_features.csv')
@@ -48,7 +56,8 @@ def Predict_model(mode, x_train, y_train):
         model = KNeighborsClassifier(n_neighbors=3).fit(x_train, y_train)
     elif mode == 'SVM':
         model = svm.SVC(class_weight='balanced').fit(x_train, y_train)
-        # model = svm.SVC().fit(x_train, y_train)
+    elif mode == 'MLP':    
+        model = MLPClassifier(random_state=1, max_iter=300).fit(x_train, y_train)
 
     y_pred = model.predict(x_test)
     
@@ -66,11 +75,22 @@ def Predict_model(mode, x_train, y_train):
 
 X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
+####
+print(sorted(Counter(Y).items()))
+smote_enn = SMOTEENN(random_state=0)
+X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)
+
+smote_tomek = SMOTETomek(random_state=0)
+X_resampled, Y_resampled = smote_tomek.fit_resample(X, Y)
+print(sorted(Counter(Y_resampled).items()))
+
+# breakpoint()
+####
 
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
 
-Predict_model('Logistic', x_train, y_train)
-Predict_model('NaiveBayse', x_train, y_train)
-Predict_model('DecisionTree', x_train, y_train)
-Predict_model('KNN', x_train, y_train)
+# Predict_model('Logistic', x_train, y_train)
+# Predict_model('NaiveBayse', x_train, y_train)
+# Predict_model('DecisionTree', x_train, y_train)
+# Predict_model('KNN', x_train, y_train)
 Predict_model('SVM', x_train, y_train)

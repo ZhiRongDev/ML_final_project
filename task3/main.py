@@ -11,7 +11,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score
 from sklearn.preprocessing import LabelEncoder
 
 ####
-from sklearn.svm import LinearSVC
+from sklearn.neural_network import MLPClassifier
 from sklearn.feature_selection import SelectFromModel
 ####
 
@@ -35,8 +35,7 @@ def summarize_classification(y_test, y_pred):
     print("precision score: ", prec)
     print("recall score: ", recall)
 
-
-def Predict_model(mode, x_train, y_train):
+def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     start = time.time()
     
     print("================")
@@ -51,19 +50,36 @@ def Predict_model(mode, x_train, y_train):
     elif mode == 'KNN':
         model = KNeighborsClassifier(n_neighbors=3).fit(x_train, y_train)
     elif mode == 'SVM':
-        model = svm.SVC(class_weight='balanced').fit(x_train, y_train)
-        # model = svm.SVC().fit(x_train, y_train)
+        lsvc = svm.SVC(kernel='linear', class_weight='balanced').fit(x_train, y_train)
+        tmp = SelectFromModel(lsvc)        
+        x_train = x_train.loc[:, tmp.get_support()]
+        x_test = x_test.loc[:, tmp.get_support()]
 
-    y_pred = model.predict(x_test)
+        model = svm.SVC(kernel='linear', class_weight='balanced').fit(x_train, y_train)
     
-    summarize_classification(y_test, y_pred)
+    elif mode == 'MLP':
+        lsvc = svm.SVC(kernel='linear', class_weight='balanced').fit(x_train, y_train)
+        tmp = SelectFromModel(lsvc)        
+        x_train = x_train.loc[:, tmp.get_support()]
+        x_test = x_test.loc[:, tmp.get_support()]
+        data_test = data_test.loc[:, tmp.get_support()]
+        
+        model = MLPClassifier(random_state=1, max_iter=300).fit(x_train, y_train)
+
+    y_pred = model.predict(data_test)
+    
+    # summarize_classification(y_test, y_pred)
 
     y_pred = y_pred.astype(int)  
     y_pred = le.inverse_transform(y_pred)
-    
-    # print(f'{y_pred=}')
-    
-    print(y_pred.size)
+     
+    # print(y_pred.size)
+    predict_ans = [ [index + 1, value] for (index, value) in enumerate(y_pred)]
+     
+    with open('./submission.csv', 'w') as f:
+        f.write('Id,Category\n')
+        for i in predict_ans:
+            f.write(f'{i[0]},{i[1]}\n')
     
     end = time.time()
     print(f'執行時間: {end - start} 秒\n')
@@ -72,20 +88,6 @@ X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
 
 
-# print(X.shape)
-####
-lsvc = LinearSVC(C=0.01, penalty="l1", dual=False).fit(X, Y)
-model = SelectFromModel(lsvc, prefit=True)
-X_new = model.transform(X)
-
-# print(X.shape)
-# breakpoint()
-####
-
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
 
-Predict_model('Logistic', x_train, y_train)
-Predict_model('NaiveBayse', x_train, y_train)
-Predict_model('DecisionTree', x_train, y_train)
-Predict_model('KNN', x_train, y_train)
-Predict_model('SVM', x_train, y_train)
+Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
