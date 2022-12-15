@@ -64,23 +64,24 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         x_test = x_test.loc[:, tmp.get_support()]
         data_test = data_test.loc[:, tmp.get_support()]
         
+
         model = MLPClassifier(random_state=1, max_iter=300).fit(x_train, y_train)
 
-    y_pred = model.predict(data_test)
+    y_pred = model.predict(x_test)
     
-    # summarize_classification(y_test, y_pred)
+    summarize_classification(y_test, y_pred)
 
     y_pred = y_pred.astype(int)  
     y_pred = le.inverse_transform(y_pred)
      
     # print(y_pred.size)
-    predict_ans = [ [index + 1, value] for (index, value) in enumerate(y_pred)]
-     
-    with open('./submission.csv', 'w') as f:
-        f.write('Id,Category\n')
-        for i in predict_ans:
-            f.write(f'{i[0]},{i[1]}\n')
-    
+    # predict_ans = [ [index + 1, value] for (index, value) in enumerate(y_pred)]
+    #  
+    # with open('./submission.csv', 'w') as f:
+    #     f.write('Id,Category\n')
+    #     for i in predict_ans:
+    #         f.write(f'{i[0]},{i[1]}\n')
+    # 
     end = time.time()
     print(f'執行時間: {end - start} 秒\n')
 
