@@ -27,7 +27,7 @@ data_train['class']=le.transform(data_train['class'])
 X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
 
-####  SMOTEENN works better !!!!
+####  
 print(sorted(Counter(Y).items()))
 # smote_enn = SMOTEENN()
 # X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)

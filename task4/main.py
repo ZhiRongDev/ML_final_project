@@ -18,6 +18,10 @@ from sklearn.svm import LinearSVC
 
 ###
 from sklearn.impute import SimpleImputer
+
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import mutual_info_classif 
+from sklearn.feature_selection import f_classif 
 ###
 
 data_train = pd.read_csv('./train_dec10_task4_missing_supplement.csv')
@@ -28,17 +32,26 @@ le=LabelEncoder()
 le.fit(data_train['class'])
 data_train['class']=le.transform(data_train['class'])
 
-###
-imp = SimpleImputer(missing_values=np.nan, strategy='mean')
+### Remove NA value
+imp = SimpleImputer(missing_values=np.nan, strategy='most_frequent')
 imp.fit(data_train)
 data_train = pd.DataFrame(imp.transform(data_train), columns = data_train.columns) 
-
 imp.fit(data_test)
 data_test = pd.DataFrame(imp.transform(data_test), columns = data_test.columns)
 ###
-
 X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
+
+### SelectKBest feature
+print(X.shape)
+X_new = SelectKBest(f_classif, k=10).fit_transform(X, Y)
+
+print(X_new.shape)
+
+# breakpoint()
+
+###
+
 
 print(sorted(Counter(Y).items()))
 # smote_enn = SMOTEENN()
@@ -87,11 +100,11 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         model = GridSearchCV(k_nn, parameters).fit(x_train, y_train)
     
     elif mode == 'SVM':
-        lsvc = LinearSVC(C=0.01, penalty="l1", dual=False).fit(x_train, y_train)
-        tmp = SelectFromModel(lsvc)        
-        x_train = x_train.loc[:, tmp.get_support()]
-        x_test = x_test.loc[:, tmp.get_support()]
-        data_test = data_test.loc[:, tmp.get_support()]
+        # lsvc = LinearSVC(C=0.01, penalty="l1", dual=False).fit(x_train, y_train)
+        # tmp = SelectFromModel(lsvc)        
+        # x_train = x_train.loc[:, tmp.get_support()]
+        # x_test = x_test.loc[:, tmp.get_support()]
+        # data_test = data_test.loc[:, tmp.get_support()]
 
         parameters = {
             'kernel':['linear', 'poly', 'rbf', 'sigmoid'], 
@@ -102,15 +115,17 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
 
 
     elif mode == 'MLP':
-        lsvc = LinearSVC(C=0.01, penalty="l1", dual=False).fit(x_train, y_train)
-        tmp = SelectFromModel(lsvc)        
-        x_train = x_train.loc[:, tmp.get_support()]
-        x_test = x_test.loc[:, tmp.get_support()]
-        data_test = data_test.loc[:, tmp.get_support()]
+        # lsvc = LinearSVC(C=0.01, penalty="l1", dual=False).fit(x_train, y_train)
+        # tmp = SelectFromModel(lsvc)        
+        # x_train = x_train.loc[:, tmp.get_support()]
+        # x_test = x_test.loc[:, tmp.get_support()]
+        # data_test = data_test.loc[:, tmp.get_support()]
+        ###
 
         parameters = {
             'activation': ['identity', 'logistic', 'tanh', 'relu'],
         }
+
         mlp = MLPClassifier(max_iter=10000)
         model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
 
