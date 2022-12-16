@@ -21,6 +21,9 @@ from sklearn.impute import SimpleImputer
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import mutual_info_classif 
 from sklearn.feature_selection import f_classif 
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.impute import KNNImputer
 ###
 
 data_train = pd.read_csv('./train_dec10_task4_missing_supplement.csv')
@@ -31,13 +34,24 @@ le=LabelEncoder()
 le.fit(data_train['class'])
 data_train['class']=le.transform(data_train['class'])
 
-### Remove NA value
-imp = SimpleImputer(missing_values=np.nan, strategy='most_frequent')
+### Remove NA value - Normal
+# imp = SimpleImputer(missing_values=np.nan, strategy='mean')
+# imp.fit(data_train)
+# data_train = pd.DataFrame(imp.transform(data_train), columns = data_train.columns) 
+# imp.fit(data_test)
+# data_test = pd.DataFrame(imp.transform(data_test), columns = data_test.columns)
+###
+
+### Remove NA value - KNN
+imp = KNNImputer(missing_values=np.nan)
 imp.fit(data_train)
 data_train = pd.DataFrame(imp.transform(data_train), columns = data_train.columns) 
 imp.fit(data_test)
 data_test = pd.DataFrame(imp.transform(data_test), columns = data_test.columns)
 ###
+
+
+
 X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
 
@@ -91,7 +105,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     
     elif mode == 'SVM':
         parameters = {
-            'kernel':['linear', 'poly', 'rbf', 'sigmoid'], 
+            'kernel':['poly', 'rbf'], 
             'C':[1, 10, 100]
         }
         svc = svm.SVC()
@@ -99,15 +113,24 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
 
 
     elif mode == 'MLP':
+        # parameters = {
+        #     'activation': ['logistic', 'relu'],
+        # }
+
+        # mlp = MLPClassifier(max_iter=10000)
+        # model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
+        model = MLPClassifier(max_iter=10000).fit(x_train, y_train)
+    
+    elif mode == 'DecicionTree':
         parameters = {
-            'activation': ['logistic', 'relu'],
+            'min_samples_split': [2, 3, 4],
         }
+        deci = DecisionTreeClassifier()
+        model = GridSearchCV(deci, parameters).fit(x_train, y_train)
 
-        mlp = MLPClassifier(max_iter=10000)
-        model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
 
-    y_pred = model.predict(data_test)
-    # summarize_classification(y_test, y_pred)
+    y_pred = model.predict(x_test)
+    summarize_classification(y_test, y_pred)
 
     ## transform back the "class" label in dataset
     y_pred = y_pred.astype(int)  
@@ -123,6 +146,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     end = time.time()
     print(f'執行時間: {end - start} 秒\n')
 
-# Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
+Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
 # Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
-Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
+# Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
+Predict_model('DecicionTree', x_train, y_train, x_test, y_test, data_test)
