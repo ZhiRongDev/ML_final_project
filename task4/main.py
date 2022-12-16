@@ -41,11 +41,11 @@ X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
 
 print(sorted(Counter(Y).items()))
-smote_enn = SMOTEENN()
-X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)
+# smote_enn = SMOTEENN()
+# X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)
 
-# smote_tomek = SMOTETomek()
-# X_resampled, Y_resampled = smote_tomek.fit_resample(X, Y)
+smote_tomek = SMOTETomek()
+X_resampled, Y_resampled = smote_tomek.fit_resample(X, Y)
 print(sorted(Counter(Y_resampled).items()))
 
 ## do not set the random_state, in order to make sure the datasplit is "random"

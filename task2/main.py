@@ -29,11 +29,11 @@ Y = data_train['class']
 
 ####  SMOTEENN works better !!!!
 print(sorted(Counter(Y).items()))
-smote_enn = SMOTEENN()
-X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)
+# smote_enn = SMOTEENN()
+# X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)
 
-# smote_tomek = SMOTETomek()
-# X_resampled, Y_resampled = smote_tomek.fit_resample(X, Y)
+smote_tomek = SMOTETomek()
+X_resampled, Y_resampled = smote_tomek.fit_resample(X, Y)
 print(sorted(Counter(Y_resampled).items()))
 
 # breakpoint()
@@ -106,5 +106,5 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     print(f'執行時間: {end - start} 秒\n')
 
 # Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
-Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
-# Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
+# Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
+Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)

@@ -29,13 +29,13 @@ data_train['class']=le.transform(data_train['class'])
 X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
 
-####  SMOTEENN works better !!!!
+####  
 print(sorted(Counter(Y).items()))
-smote_enn = SMOTEENN()
-X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)
+# smote_enn = SMOTEENN()
+# X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)
 
-# smote_tomek = SMOTETomek()
-# X_resampled, Y_resampled = smote_tomek.fit_resample(X, Y)
+smote_tomek = SMOTETomek()
+X_resampled, Y_resampled = smote_tomek.fit_resample(X, Y)
 print(sorted(Counter(Y_resampled).items()))
 
 # breakpoint()
@@ -112,8 +112,8 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         mlp = MLPClassifier(max_iter=10000)
         model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
 
-    y_pred = model.predict(x_test)
-    summarize_classification(y_test, y_pred)
+    y_pred = model.predict(data_test)
+    # summarize_classification(y_test, y_pred)
 
     ## transform back the "class" label in dataset
     y_pred = y_pred.astype(int)  
@@ -130,5 +130,5 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     print(f'執行時間: {end - start} 秒\n')
 
 # Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
+# Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
 Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
-# Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
