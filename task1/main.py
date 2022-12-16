@@ -59,7 +59,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     
     elif mode == 'SVM':
         parameters = {
-            'kernel':('linear', 'poly', 'rbf', 'sigmoid'), 
+            'kernel':['linear', 'poly', 'rbf', 'sigmoid'], 
             'C':[1, 10, 100]
         }
         svc = svm.SVC()
@@ -67,11 +67,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
 
     elif mode == 'MLP':
         parameters = {
-            # 'hidden_layer_sizes': [(50,50,50), (50,100,50), (100,)],
-            'activation': ['tanh', 'relu'],
-            'solver': ['sgd', 'adam'],
-            'alpha': [0.0001, 0.05],
-            'learning_rate': ['constant','adaptive'],
+            'activation': ['identity', 'logistic', 'tanh', 'relu'],
         }
         mlp = MLPClassifier(max_iter=10000)
         model = GridSearchCV(mlp, parameters).fit(x_train, y_train)

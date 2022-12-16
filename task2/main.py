@@ -27,7 +27,7 @@ data_train['class']=le.transform(data_train['class'])
 X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
 
-####
+####  SMOTEENN works better !!!!
 print(sorted(Counter(Y).items()))
 smote_enn = SMOTEENN()
 X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)
@@ -75,7 +75,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     
     elif mode == 'SVM':
         parameters = {
-            'kernel':('linear', 'poly', 'rbf', 'sigmoid'), 
+            'kernel':['linear', 'poly', 'rbf', 'sigmoid'], 
             'C':[1, 10, 100]
         }
         svc = svm.SVC()
@@ -83,11 +83,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
 
     elif mode == 'MLP':
         parameters = {
-            # 'hidden_layer_sizes': [(50,50,50), (50,100,50), (100,)],
-            'activation': ['tanh', 'relu'],
-            'solver': ['sgd', 'adam'],
-            'alpha': [0.0001, 0.05],
-            'learning_rate': ['constant','adaptive'],
+            'activation': ['identity', 'logistic', 'tanh', 'relu'],
         }
         mlp = MLPClassifier(max_iter=10000)
         model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
