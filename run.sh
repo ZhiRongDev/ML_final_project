@@ -1,10 +1,18 @@
-rm -rf ./task1/submission.csv
-rm -rf ./task2/submission.csv
-rm -rf ./task3/submission.csv
-rm -rf ./task4/submission.csv
+cd ./task1
+rm -rf submission.csv
+python3 main.py
 
-python3 ./task1/main.py
-python3 ./task2/main.py
-python3 ./task3/main.py
-python3 ./task4/main.py
+cd ../
+cd ./task2
+rm -rf submission.csv
+python3 main.py
 
+cd ../
+cd ./task3
+rm -rf submission.csv
+python3 main.py
+
+cd ../
+cd ./task4
+rm -rf submission.csv
+python3 main.py

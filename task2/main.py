@@ -16,8 +16,8 @@ from imblearn.combine import SMOTEENN
 from imblearn.combine import SMOTETomek
 ###
 
-data_train = pd.read_csv('train_dec04_task2.csv')
-data_test = pd.read_csv('test_dec04_task2_only_features.csv')
+data_train = pd.read_csv('./train_dec04_task2.csv')
+data_test = pd.read_csv('./test_dec04_task2_only_features.csv')
 
 ## transform the "class" label into number
 le=LabelEncoder()

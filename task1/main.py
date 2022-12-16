@@ -13,8 +13,8 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import GridSearchCV
 ###
 
-data_train = pd.read_csv('train_nov28_task1.csv')
-data_test = pd.read_csv('test_nov28_task1_only_features.csv')
+data_train = pd.read_csv('./train_nov28_task1.csv')
+data_test = pd.read_csv('./test_nov28_task1_only_features.csv')
 
 ## transform the "class" label into number
 le=LabelEncoder()
