@@ -62,10 +62,6 @@ X = pd.DataFrame(scaler.transform(X), columns = X.columns)
 
 scaler.fit(data_test)
 data_test = pd.DataFrame(scaler.transform(data_test), columns = data_test.columns)
-
-# print(X)
-# print(data_test)
-# breakpoint()
 ###
 
 
@@ -116,9 +112,9 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         }
         k_nn = KNeighborsClassifier()
         model = GridSearchCV(k_nn, parameters).fit(x_train, y_train)
+        print(f"Best parameters: {model.best_params_}")    
     
     elif mode == 'SVM':
-        
         parameters = [
             {
                 'kernel': ['rbf'],
@@ -128,6 +124,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         ]
         svc = svm.SVC()
         model = GridSearchCV(svc, parameters).fit(x_train, y_train)
+        print(f"Best parameters: {model.best_params_}")    
 
     elif mode == 'MLP':
         parameters = {
@@ -136,6 +133,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
 
         mlp = MLPClassifier(max_iter=10000)
         model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
+        print(f"Best parameters: {model.best_params_}")    
     
     elif mode == 'xgboost':
         parameters = { 
@@ -146,10 +144,8 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         }
         xgb = XGBClassifier() 
         model = GridSearchCV(xgb, parameters).fit(x_train, y_train)
-
-        ### basic parameters set
-        # model = XGBClassifier(n_estimators=100, learning_rate= 0.3)
-        # model.fit(x_train, y_train)
+        print(f"Best parameters: {model.best_params_}")    
+    
 
     y_pred = model.predict(x_test)
     summarize_classification(y_test, y_pred)

@@ -14,6 +14,7 @@ from sklearn.model_selection import GridSearchCV
 from collections import Counter
 from imblearn.combine import SMOTEENN
 from imblearn.combine import SMOTETomek
+from xgboost import XGBClassifier
 ###
 
 data_train = pd.read_csv('./train_dec04_task2.csv')
@@ -26,6 +27,17 @@ data_train['class']=le.transform(data_train['class'])
 
 X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
+
+
+### data Standardization
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(X)
+X = pd.DataFrame(scaler.transform(X), columns = X.columns)
+
+scaler.fit(data_test)
+data_test = pd.DataFrame(scaler.transform(data_test), columns = data_test.columns)
+###
 
 ####  
 print(sorted(Counter(Y).items()))
@@ -72,6 +84,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         }
         k_nn = KNeighborsClassifier()
         model = GridSearchCV(k_nn, parameters).fit(x_train, y_train)
+        print(f"Best parameters: {model.best_params_}")    
     
     elif mode == 'SVM':
         parameters = {
@@ -80,6 +93,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         }
         svc = svm.SVC()
         model = GridSearchCV(svc, parameters).fit(x_train, y_train)
+        print(f"Best parameters: {model.best_params_}")    
 
     elif mode == 'MLP':
         parameters = {
@@ -87,9 +101,26 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         }
         mlp = MLPClassifier(max_iter=10000)
         model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
+        print(f"Best parameters: {model.best_params_}")    
 
-    # y_pred = model.predict(x_test)
-    # summarize_classification(y_test, y_pred)
+    elif mode == 'xgboost':
+        parameters = { 
+            'max_depth': [3,6,10],
+            'learning_rate': [0.01, 0.05, 0.1],
+            'n_estimators': [100, 500, 1000],
+            'colsample_bytree': [0.3, 0.7]
+        }
+
+        # parameters = { 
+        #     'n_estimators': [100],
+        #     'colsample_bytree': [0.3]
+        # }
+        xgb = XGBClassifier() 
+        model = GridSearchCV(xgb, parameters).fit(x_train, y_train)
+        print(f"Best parameters: {model.best_params_}")    
+    
+    y_pred = model.predict(x_test)
+    summarize_classification(y_test, y_pred)
 
     y_pred = model.predict(data_test)
     ## transform back the "class" label in dataset
@@ -108,4 +139,5 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
 
 # Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
 # Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
-Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
+# Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
+Predict_model('xgboost', x_train, y_train, x_test, y_test, data_test)
