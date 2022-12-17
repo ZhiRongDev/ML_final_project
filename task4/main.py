@@ -22,8 +22,9 @@ from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import mutual_info_classif 
 from sklearn.feature_selection import f_classif 
 
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.impute import KNNImputer
+from xgboost import XGBClassifier
+
 ###
 
 data_train = pd.read_csv('./train_dec10_task4_missing_supplement.csv')
@@ -50,10 +51,23 @@ imp.fit(data_test)
 data_test = pd.DataFrame(imp.transform(data_test), columns = data_test.columns)
 ###
 
-
-
 X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
+
+### data Standardization
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(X)
+X = pd.DataFrame(scaler.transform(X), columns = X.columns)
+
+scaler.fit(data_test)
+data_test = pd.DataFrame(scaler.transform(data_test), columns = data_test.columns)
+
+# print(X)
+# print(data_test)
+# breakpoint()
+###
+
 
 ### SelectKBest feature
 print(X.shape)
@@ -104,34 +118,43 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         model = GridSearchCV(k_nn, parameters).fit(x_train, y_train)
     
     elif mode == 'SVM':
-        parameters = {
-            'kernel':['poly', 'rbf'], 
-            'C':[1, 10, 100]
-        }
+        
+        parameters = [
+            {
+                'kernel': ['rbf'],
+                'gamma': ['scale', 'auto'],
+                'C': [1, 10, 100]
+            }
+        ]
         svc = svm.SVC()
         model = GridSearchCV(svc, parameters).fit(x_train, y_train)
 
-
     elif mode == 'MLP':
-        # parameters = {
-        #     'activation': ['logistic', 'relu'],
-        # }
-
-        # mlp = MLPClassifier(max_iter=10000)
-        # model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
-        model = MLPClassifier(max_iter=10000).fit(x_train, y_train)
-    
-    elif mode == 'DecicionTree':
         parameters = {
-            'min_samples_split': [2, 3, 4],
+            'activation': ['logistic', 'relu'],
         }
-        deci = DecisionTreeClassifier()
-        model = GridSearchCV(deci, parameters).fit(x_train, y_train)
 
+        mlp = MLPClassifier(max_iter=10000)
+        model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
+    
+    elif mode == 'xgboost':
+        parameters = { 
+            'max_depth': [3,6,10],
+            'learning_rate': [0.01, 0.05, 0.1],
+            'n_estimators': [100, 500, 1000],
+            'colsample_bytree': [0.3, 0.7]
+        }
+        xgb = XGBClassifier() 
+        model = GridSearchCV(xgb, parameters).fit(x_train, y_train)
+
+        ### basic parameters set
+        # model = XGBClassifier(n_estimators=100, learning_rate= 0.3)
+        # model.fit(x_train, y_train)
 
     y_pred = model.predict(x_test)
     summarize_classification(y_test, y_pred)
 
+    y_pred = model.predict(data_test)
     ## transform back the "class" label in dataset
     y_pred = y_pred.astype(int)  
     y_pred = le.inverse_transform(y_pred)
@@ -146,7 +169,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     end = time.time()
     print(f'執行時間: {end - start} 秒\n')
 
-Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
+# Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
 # Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
 # Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
-Predict_model('DecicionTree', x_train, y_train, x_test, y_test, data_test)
+Predict_model('xgboost', x_train, y_train, x_test, y_test, data_test)

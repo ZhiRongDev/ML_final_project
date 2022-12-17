@@ -88,9 +88,10 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
         mlp = MLPClassifier(max_iter=10000)
         model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
 
-    y_pred = model.predict(data_test)
+    # y_pred = model.predict(x_test)
     # summarize_classification(y_test, y_pred)
 
+    y_pred = model.predict(data_test)
     ## transform back the "class" label in dataset
     y_pred = y_pred.astype(int)  
     y_pred = le.inverse_transform(y_pred)
