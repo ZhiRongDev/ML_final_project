@@ -34,13 +34,13 @@ X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
 
 ### data Standardization
-from sklearn.preprocessing import StandardScaler
-scaler = StandardScaler()
-scaler.fit(X)
-X = pd.DataFrame(scaler.transform(X), columns = X.columns)
+# from sklearn.preprocessing import StandardScaler
+# scaler = StandardScaler()
+# scaler.fit(X)
+# X = pd.DataFrame(scaler.transform(X), columns = X.columns)
 
-scaler.fit(data_test)
-data_test = pd.DataFrame(scaler.transform(data_test), columns = data_test.columns)
+# scaler.fit(data_test)
+# data_test = pd.DataFrame(scaler.transform(data_test), columns = data_test.columns)
 ###
 
 ### SelectKBest feature
@@ -114,16 +114,11 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
 
     elif mode == 'xgboost':
         parameters = { 
-            'max_depth': [3,6,10],
-            'learning_rate': [0.01, 0.05, 0.1],
-            'n_estimators': [100, 500, 1000],
-            'colsample_bytree': [0.3, 0.7]
+            'max_depth': [10],
+            'learning_rate': [0.1],
+            'n_estimators': [1000],
+            'colsample_bytree': [0.7]
         }
-
-        # parameters = { 
-        #     'n_estimators': [100],
-        #     'colsample_bytree': [0.3]
-        # }
         xgb = XGBClassifier() 
         model = GridSearchCV(xgb, parameters).fit(x_train, y_train)
         print(f"Best parameters: {model.best_params_}")    

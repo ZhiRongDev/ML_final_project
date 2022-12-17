@@ -137,10 +137,10 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     
     elif mode == 'xgboost':
         parameters = { 
-            'max_depth': [3,6,10],
-            'learning_rate': [0.01, 0.05, 0.1],
-            'n_estimators': [100, 500, 1000],
-            'colsample_bytree': [0.3, 0.7]
+            'max_depth': [10],
+            'learning_rate': [0.1],
+            'n_estimators': [1000],
+            'colsample_bytree': [0.7]
         }
         xgb = XGBClassifier() 
         model = GridSearchCV(xgb, parameters).fit(x_train, y_train)
