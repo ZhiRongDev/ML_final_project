@@ -26,13 +26,13 @@ X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
 
 ### data Standardization
-# from sklearn.preprocessing import StandardScaler
-# scaler = StandardScaler()
-# scaler.fit(X)
-# X = pd.DataFrame(scaler.transform(X), columns = X.columns)
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(X)
+X = pd.DataFrame(scaler.transform(X), columns = X.columns)
 
-# scaler.fit(data_test)
-# data_test = pd.DataFrame(scaler.transform(data_test), columns = data_test.columns)
+scaler.fit(data_test)
+data_test = pd.DataFrame(scaler.transform(data_test), columns = data_test.columns)
 ###
 
 ## do not set the random_state, in order to make sure the datasplit is "random"
@@ -71,7 +71,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     
     elif mode == 'SVM':
         parameters = {
-            'kernel':['linear', 'poly', 'rbf', 'sigmoid'], 
+            'kernel':['rbf'], 
             'C':[1, 10, 100]
         }
         svc = svm.SVC()
@@ -80,7 +80,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
 
     elif mode == 'MLP':
         parameters = {
-            'activation': ['identity', 'logistic', 'tanh', 'relu'],
+            'activation': ['relu'],
         }
         mlp = MLPClassifier(max_iter=10000)
         model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
@@ -116,6 +116,6 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     print(f'執行時間: {end - start} 秒\n')
 
 # Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
-Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
-# Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
+# Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
+Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
 # Predict_model('xgboost', x_train, y_train, x_test, y_test, data_test)

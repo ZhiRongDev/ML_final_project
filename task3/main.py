@@ -34,43 +34,41 @@ X = data_train[data_train.columns[:-1]]
 Y = data_train['class']
 
 ### data Standardization
-# from sklearn.preprocessing import StandardScaler
-# scaler = StandardScaler()
-# scaler.fit(X)
-# X = pd.DataFrame(scaler.transform(X), columns = X.columns)
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+scaler.fit(X)
+X = pd.DataFrame(scaler.transform(X), columns = X.columns)
 
-# scaler.fit(data_test)
-# data_test = pd.DataFrame(scaler.transform(data_test), columns = data_test.columns)
+scaler.fit(data_test)
+data_test = pd.DataFrame(scaler.transform(data_test), columns = data_test.columns)
 ###
 
 ### SelectKBest feature
-print(X.shape)
-selector = SelectKBest(f_classif, k=10)
+selector = SelectKBest(mutual_info_classif, k=10)
 selector.fit_transform(X, Y)
 new_cols = selector.get_support(indices=True)
 feature_score = selector.scores_
 
+print(new_cols)
+print(feature_score)
 
 X = X.iloc[:, new_cols]
 data_test = data_test.iloc[:, new_cols]
-
-print(new_cols)
-print(feature_score)
 print(X.shape)
 ###
 
 ####  
-print(sorted(Counter(Y).items()))
+# print(sorted(Counter(Y).items()))
 # smote_enn = SMOTEENN()
 # X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)
 
 smote_tomek = SMOTETomek()
 X, Y = smote_tomek.fit_resample(X, Y)
-print(sorted(Counter(Y).items()))
+# print(sorted(Counter(Y).items()))
 ####
 
 ## do not set the random_state, in order to make sure the datasplit is "random"
-x_train, x_test, y_train, y_test = train_test_split(X, Y, stratify=Y ,test_size=0.2)
+x_train, x_test, y_train, y_test = train_test_split(X, Y, stratify=Y ,test_size=0.2, random_state=1)
 
 
 def summarize_classification(y_test, y_pred):
@@ -104,7 +102,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     
     elif mode == 'SVM':
         parameters = {
-            'kernel':['linear', 'poly', 'rbf', 'sigmoid'], 
+            'kernel':['rbf'], 
             'C':[1, 10, 100]
         }
         svc = svm.SVC()
@@ -113,7 +111,7 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
 
     elif mode == 'MLP':
         parameters = {
-            'activation': ['logistic', 'relu'],
+            'activation': ['relu'],
         }
         mlp = MLPClassifier(max_iter=10000)
         model = GridSearchCV(mlp, parameters).fit(x_train, y_train)
@@ -149,6 +147,6 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     print(f'執行時間: {end - start} 秒\n')
 
 # Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
-Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
-# Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
+# Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
+Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
 # Predict_model('xgboost', x_train, y_train, x_test, y_test, data_test)
