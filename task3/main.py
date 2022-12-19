@@ -45,9 +45,18 @@ Y = data_train['class']
 
 ### SelectKBest feature
 print(X.shape)
-X_new = SelectKBest(f_classif, k=10).fit_transform(X, Y)
+selector = SelectKBest(f_classif, k=10)
+selector.fit_transform(X, Y)
+new_cols = selector.get_support(indices=True)
+feature_score = selector.scores_
 
-print(X_new.shape)
+
+X = X.iloc[:, new_cols]
+data_test = data_test.iloc[:, new_cols]
+
+print(new_cols)
+print(feature_score)
+print(X.shape)
 ###
 
 ####  
@@ -56,15 +65,13 @@ print(sorted(Counter(Y).items()))
 # X_resampled, Y_resampled = smote_enn.fit_resample(X, Y)
 
 smote_tomek = SMOTETomek()
-X_resampled, Y_resampled = smote_tomek.fit_resample(X, Y)
-print(sorted(Counter(Y_resampled).items()))
-
-# breakpoint()
+X, Y = smote_tomek.fit_resample(X, Y)
+print(sorted(Counter(Y).items()))
 ####
 
 ## do not set the random_state, in order to make sure the datasplit is "random"
-x_train, x_test, y_train, y_test = train_test_split(X_resampled, Y_resampled, stratify=Y_resampled ,test_size=0.2)
-# x_train, x_test, y_train, y_test = train_test_split(X, Y, stratify=Y ,test_size=0.2)
+x_train, x_test, y_train, y_test = train_test_split(X, Y, stratify=Y ,test_size=0.2)
+
 
 def summarize_classification(y_test, y_pred):
     acc = accuracy_score(y_test, y_pred, normalize=True)
@@ -142,6 +149,6 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     print(f'執行時間: {end - start} 秒\n')
 
 # Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
-# Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
+Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
 # Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
-Predict_model('xgboost', x_train, y_train, x_test, y_test, data_test)
+# Predict_model('xgboost', x_train, y_train, x_test, y_test, data_test)

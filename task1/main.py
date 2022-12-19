@@ -116,6 +116,6 @@ def Predict_model(mode, x_train, y_train, x_test, y_test, data_test):
     print(f'執行時間: {end - start} 秒\n')
 
 # Predict_model('KNN', x_train, y_train, x_test, y_test, data_test)
-# Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
+Predict_model('SVM', x_train, y_train, x_test, y_test, data_test)
 # Predict_model('MLP', x_train, y_train, x_test, y_test, data_test)
-Predict_model('xgboost', x_train, y_train, x_test, y_test, data_test)
+# Predict_model('xgboost', x_train, y_train, x_test, y_test, data_test)
